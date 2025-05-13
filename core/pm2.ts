@@ -26,6 +26,7 @@ import {
 import { processAppMetrics, deleteAppMetrics } from '../metrics/app';
 
 import { getLogger } from '../utils/logger';
+import { getDockerStats } from '../utils/docker';
 
 type IPidsData = Record<number, IPidDataInput>;
 type IAppData = Record<string, { pids: number[]; restartsSum: number; status?: Pm2Env['status'] }>;
@@ -68,15 +69,11 @@ const detectActiveApps = () => {
     pm2.list((err, apps) => {
         if (err) return console.error(err.stack || err);
 
-        const isHub = (app: pm2.ProcessDescription) => app.name?.includes('hub');
-
-        console.error('debug233.apps', apps.filter(isHub));
-
         const pidsMonit: IPidsData = {};
         const mapAppPids: IAppData = {};
         const activePM2Ids = new Set<number>();
 
-        apps.forEach((appInstance) => {
+        apps.forEach((appInstance: pm2.ProcessDescription) => {
             const pm2_env = appInstance.pm2_env as pm2.Pm2Env;
             const appName = appInstance.name;
 
@@ -203,7 +200,7 @@ const detectActiveApps = () => {
         // Get real pids data.
         // !ATTENTION! Can not use PM2 app.monit because of incorrect values of CPU usage
         getPidsUsage(pids)
-            .then((stats) => {
+            .then(async (stats) => {
                 // Fill data for all pids
                 if (stats && Object.keys(stats).length) {
                     for (const [pid, stat] of Object.entries(stats)) {
@@ -216,13 +213,31 @@ const detectActiveApps = () => {
                     }
                 }
 
+                // Get docker stats
+                // @ts-expect-error
+                const dockerApps = apps.filter((app) => app.pm2_env?.BLOCKLET_DOCKER_NAME);
+                await getDockerStats(
+                    // @ts-expect-error
+                    dockerApps.map((x) => x.pm2_env?.BLOCKLET_DOCKER_NAME)
+                ).then((stats) => {
+                    stats.map((stat, i) => {
+                        const entry = mapAppPids[dockerApps[i].name!];
+                        if (entry) {
+                            entry.pids.forEach((pid) => {
+                                pidsMonit[pid].cpu = stat.cpuUsage;
+                                pidsMonit[pid].memory = stat.memoryUsage;
+                            });
+                        }
+                    });
+                });
+
                 for (const [appName, entry] of Object.entries(mapAppPids)) {
                     const workingApp = APPS[appName];
 
                     if (workingApp) {
                         // Update pids data
                         entry.pids.forEach((pidId) => {
-                            const monit = pidsMonit[pidId];
+                            const monit: IPidDataInput | undefined = pidsMonit[pidId];
 
                             if (monit) {
                                 updateAppPidsData(workingApp, monit);
@@ -237,6 +252,9 @@ const detectActiveApps = () => {
             .catch((err) => {
                 console.error(err.stack || err);
             });
+
+        // get docker stats
+        // @ts-ignore
     });
 };
 

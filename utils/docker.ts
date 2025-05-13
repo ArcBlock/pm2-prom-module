@@ -1,6 +1,8 @@
 import { access, constants, readFile } from 'node:fs/promises';
 import os from 'node:os';
 import { getCpuCount } from './cpu';
+import { $ } from 'zx';
+import xbytes from 'xbytes';
 
 //const MEMORY_AVAILABLE = '/sys/fs/cgroup/memory.limit_in_bytes';
 //const MEMORY_USED = '/sys/fs/cgroup/memory.usage_in_bytes';
@@ -102,3 +104,39 @@ export const getCPULimit = async () => {
 
     return count;
 };
+
+export async function getDockerStats(ids: string[]): Promise<
+    {
+        name: string;
+        cpuUsage: number;
+        memoryUsage: number;
+        totalMemory: number;
+    }[]
+> {
+    if (!ids.length) {
+        return [];
+    }
+    const result = await $`docker stats --no-stream --format "{{json .}}" -a`;
+    if (result.exitCode || !result.stdout) {
+        return [];
+    }
+    const statsRows = result.stdout
+        .split('\n')
+        .filter(Boolean)
+        .map((x: string) => JSON.parse(x));
+    const stats = statsRows.map((x: any) => {
+        const [memoryUsage, totalMemory] = x.MemUsage.split('/').map((x: string) =>
+            xbytes.parseSize(x.trim())
+        );
+        return {
+            name: x.Name,
+            cpuUsage: +x.CPUPerc.replace('%', ''),
+            memoryUsage: memoryUsage,
+            totalMemory: totalMemory,
+        };
+    });
+
+    return ids.map((id) => {
+        return stats.find((x) => x.name === id);
+    });
+}
