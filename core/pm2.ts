@@ -68,6 +68,10 @@ const detectActiveApps = () => {
     pm2.list((err, apps) => {
         if (err) return console.error(err.stack || err);
 
+        const isHub = (app: pm2.ProcessDescription) => app.name?.includes('hub');
+
+        console.error('debug233.apps', apps.filter(isHub));
+
         const pidsMonit: IPidsData = {};
         const mapAppPids: IAppData = {};
         const activePM2Ids = new Set<number>();
@@ -94,7 +98,7 @@ const detectActiveApps = () => {
             // Get the last app instance status
             mapAppPids[appName].status = appInstance.pm2_env?.status;
 
-            if (appInstance.pid && appInstance.pm_id) {
+            if (appInstance.pid && appInstance.pm_id !== undefined) {
                 mapAppPids[appName].pids.push(appInstance.pid);
 
                 // Fill active pm2 apps id to collect internal statistic

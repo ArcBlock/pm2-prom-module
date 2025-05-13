@@ -10,6 +10,8 @@
         "prom-client": "^15.1.3"
     },
     "scripts": {
+        "predev": "pm2 delete pm2-prom-module || true && npm run build",
+        "dev": "pm2 install .",
         "build": "tsc -p tsconfig.json",
         "watch": "tsc -w -p tsconfig.json",
         "release": "npm run build && npm publish"
