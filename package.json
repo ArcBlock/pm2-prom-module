@@ -1,6 +1,9 @@
 {
-    "name": "pm2-prom-module",
+    "name": "@arcblock/pm2-prom-module",
     "version": "2.6.0",
+    "publishConfig": {
+        "access": "public"
+    },
     "description": "PM2 module to help collect applications statistic and send it to Prometheus server",
     "main": "index.js",
     "dependencies": {
@@ -16,7 +19,8 @@
         "dev": "pm2 install .",
         "build": "tsc -p tsconfig.json",
         "watch": "tsc -w -p tsconfig.json",
-        "release": "npm run build && npm publish"
+        "release": "npm run build && npm publish",
+        "bump:version": "zx scripts/bump-version.mjs --quiet"
     },
     "files": [
         "README.md",
@@ -42,6 +46,7 @@
     "devDependencies": {
         "@types/node": "^18.19.50",
         "@types/pidusage": "^2.0.5",
+        "bumpp": "^10.1.0",
         "typescript": "^5.3.3"
     },
     "engines": {
