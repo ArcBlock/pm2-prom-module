@@ -252,9 +252,6 @@ const detectActiveApps = () => {
             .catch((err) => {
                 console.error(err.stack || err);
             });
-
-        // get docker stats
-        // @ts-ignore
     });
 };
 
