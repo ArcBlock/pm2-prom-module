@@ -3,6 +3,7 @@ import os from 'node:os';
 import { getCpuCount } from './cpu';
 import { $ } from 'zx';
 import xbytes from 'xbytes';
+import getIP from '@abtnode/util/lib/get-ip';
 
 // 禁用命令和结果的自动输出
 $.verbose = false;
@@ -35,6 +36,31 @@ export const getAvailableMemory = async () => {
         }
     } catch {
         return 0;
+    }
+};
+
+export const getBlockletServerInfo = async () => {
+    try {
+        const ip = await getIP({ includeV6: true, timeout: 5000 });
+        const response = await fetch(
+            `https://${ip.internal.replaceAll('.', '-')}.ip.abtnet.io/admin/.well-known/did.json`
+        );
+        if (response.status !== 200) {
+            throw new Error(
+                `Failed to get blocklet server info, status: ${response.status}, statusText: ${response.statusText}`
+            );
+        }
+        const data = await response.json();
+        const version = data.services.find((service: any) => service.type === 'server').metadata
+            .version;
+        return {
+            version,
+        };
+    } catch (error) {
+        console.error(error);
+        return {
+            version: 'unknown',
+        };
     }
 };
 
