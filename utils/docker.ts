@@ -56,7 +56,7 @@ export const getBlockletServerInfo = async () => {
         );
         if (response.status !== 200) {
             throw new Error(
-                `Failed to get blocklet server info, status: ${response.status}, statusText: ${response.statusText}`
+                `Failed to get blocklet server info, ip: ${ip}, status: ${response.status}, statusText: ${response.statusText}`
             );
         }
         console.timeEnd('getBlockletServerInfo.fetch');
