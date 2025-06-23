@@ -3,7 +3,8 @@ import os from 'node:os';
 import { getCpuCount } from './cpu';
 import { $ } from 'zx';
 import xbytes from 'xbytes';
-import getIP from '@abtnode/util/lib/get-ip';
+// import getIP from '@abtnode/util/lib/get-ip';
+import { v4 as internalIpV4 } from 'internal-ip';
 
 // 禁用命令和结果的自动输出
 $.verbose = false;
@@ -42,11 +43,15 @@ export const getAvailableMemory = async () => {
 export const getBlockletServerInfo = async () => {
     try {
         console.time('getBlockletServerInfo.getIP');
-        const ip = await getIP({ includeExternal: false, timeout: 5000 });
+        // const ip = await getIP({ includeExternal: false, timeout: 5000 });
+        const ip = await internalIpV4();
+        if (!ip) {
+            throw new Error('Failed to get internal IP address');
+        }
         console.timeEnd('getBlockletServerInfo.getIP');
         console.time('getBlockletServerInfo.fetch');
         const response = await fetch(
-            `https://${ip.internal.replaceAll('.', '-')}.ip.abtnet.io/admin/.well-known/did.json`
+            `https://${ip.replace(/\./g, '-')}.ip.abtnet.io/admin/.well-known/did.json`
         );
         if (response.status !== 200) {
             throw new Error(
