@@ -3,7 +3,7 @@ import os from 'node:os';
 import { getCpuCount } from './cpu';
 import { $ } from 'zx';
 import xbytes from 'xbytes';
-// import getIP from '@abtnode/util/lib/get-ip';
+import getIP from '@abtnode/util/lib/get-ip';
 import { v4 as internalIpV4 } from 'internal-ip';
 
 // 禁用命令和结果的自动输出
@@ -43,8 +43,9 @@ export const getAvailableMemory = async () => {
 export const getBlockletServerInfo = async () => {
     try {
         console.time('getBlockletServerInfo.getIP');
-        // const ip = await getIP({ includeExternal: false, timeout: 5000 });
-        const ip = await internalIpV4();
+        const ip =
+            (await internalIpV4()) ||
+            (await getIP({ includeExternal: false, timeout: 5000 })).internal;
         if (!ip) {
             throw new Error('Failed to get internal IP address');
         }
