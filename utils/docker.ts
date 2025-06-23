@@ -42,15 +42,12 @@ export const getAvailableMemory = async () => {
 
 export const getBlockletServerInfo = async () => {
     try {
-        console.time('getBlockletServerInfo.getIP');
         const ip =
             (await internalIpV4()) ||
             (await getIP({ includeExternal: false, timeout: 5000 })).internal;
         if (!ip) {
             throw new Error('Failed to get internal IP address');
         }
-        console.timeEnd('getBlockletServerInfo.getIP');
-        console.time('getBlockletServerInfo.fetch');
         const response = await fetch(
             `https://${ip.replace(/\./g, '-')}.ip.abtnet.io/.well-known/did.json`
         );
@@ -59,10 +56,7 @@ export const getBlockletServerInfo = async () => {
                 `Failed to get blocklet server info, ip: ${ip}, status: ${response.status}, statusText: ${response.statusText}`
             );
         }
-        console.timeEnd('getBlockletServerInfo.fetch');
-        console.time('getBlockletServerInfo.json');
         const data = await response.json();
-        console.timeEnd('getBlockletServerInfo.json');
         const version = data.services.find((service: any) => service.type === 'server').metadata
             .version;
         return {
