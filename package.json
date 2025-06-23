@@ -17,7 +17,7 @@
         "zx": "^4.3.0"
     },
     "scripts": {
-        "predev": "pm2 delete @arcblock/pm2-prom-module && pm2 uninstall @arcblock/pm2-prom-module || true && npm run build",
+        "predev": "export PM2_HOME=~/.arcblock/abtnode && pm2 delete @arcblock/pm2-prom-module && pm2 uninstall @arcblock/pm2-prom-module || true && npm run build",
         "dev": "pm2 install .",
         "build": "tsc -p tsconfig.json",
         "watch": "tsc -w -p tsconfig.json",
