@@ -52,7 +52,7 @@ export const getBlockletServerInfo = async () => {
         console.timeEnd('getBlockletServerInfo.getIP');
         console.time('getBlockletServerInfo.fetch');
         const response = await fetch(
-            `https://${ip.replace(/\./g, '-')}.ip.abtnet.io/admin/.well-known/did.json`
+            `https://${ip.replace(/\./g, '-')}.ip.abtnet.io/.well-known/did.json`
         );
         if (response.status !== 200) {
             throw new Error(
