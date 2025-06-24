@@ -1,6 +1,6 @@
 {
     "name": "@arcblock/pm2-prom-module",
-    "version": "2.6.2",
+    "version": "2.6.3",
     "publishConfig": {
         "access": "public"
     },
@@ -22,7 +22,7 @@
         "build": "tsc -p tsconfig.json",
         "watch": "tsc -w -p tsconfig.json",
         "release": "npm run build && npm publish",
-        "bump:version": "zx scripts/bump-version.mjs --quiet"
+        "bump-version": "zx scripts/bump-version.mjs --quiet"
     },
     "files": [
         "README.md",
