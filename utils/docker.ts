@@ -1,6 +1,7 @@
 import { access, constants, readFile } from 'node:fs/promises';
 import os from 'node:os';
 import { getCpuCount } from './cpu';
+// @ts-expect-error
 import { $ } from 'zx';
 import xbytes from 'xbytes';
 import getIP from '@abtnode/util/lib/get-ip';
@@ -152,14 +153,14 @@ export const getCPULimit = async () => {
     return count;
 };
 
-export async function getDockerStats(ids: string[]): Promise<
-    {
-        name: string;
-        cpuUsage: number;
-        memoryUsage: number;
-        totalMemory: number;
-    }[]
-> {
+type DockerStats = {
+    name: string;
+    cpuUsage: number;
+    memoryUsage: number;
+    totalMemory: number;
+};
+
+export async function getDockerStats(ids: string[]): Promise<DockerStats[]> {
     try {
         if (!ids.length) {
             return [];
@@ -172,7 +173,12 @@ export async function getDockerStats(ids: string[]): Promise<
             .split('\n')
             .filter(Boolean)
             .map((x: string) => JSON.parse(x));
-        const stats = statsRows.map((x: any) => {
+        const stats: {
+            name: string;
+            cpuUsage: number;
+            memoryUsage: number;
+            totalMemory: number;
+        }[] = statsRows.map((x: any) => {
             const [memoryUsage, totalMemory] = x.MemUsage.split('/').map((x: string) =>
                 xbytes.parseSize(x.trim())
             );
@@ -184,6 +190,7 @@ export async function getDockerStats(ids: string[]): Promise<
             };
         });
 
+        // @ts-ignore
         return ids.map((id) => {
             return stats.find((x) => x.name === id);
         });

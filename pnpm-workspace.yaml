@@ -1,0 +1,4 @@
+onlyBuiltDependencies:
+  - core-js
+  - fast-folder-size
+  - sqlite3
