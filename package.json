@@ -46,6 +46,7 @@
         "prefix": "pm2"
     },
     "devDependencies": {
+        "@types/fs-extra": "^11.0.4",
         "@types/node": "^18.19.50",
         "@types/pidusage": "^2.0.5",
         "bumpp": "^10.1.0",
