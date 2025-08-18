@@ -271,8 +271,7 @@ export const startPm2Connect = (conf: IConfig) => {
         // Start timer to update available apps
         setInterval(() => {
             detectActiveApps();
-            // @ts-expect-error
-        }, 10 ?? conf.app_check_interval ?? WORKER_CHECK_INTERVAL);
+        }, conf.app_check_interval ?? WORKER_CHECK_INTERVAL);
 
         if (conf.debug) {
             setInterval(() => {
