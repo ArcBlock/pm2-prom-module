@@ -2,7 +2,6 @@ import pm2, { Pm2Env } from 'pm2';
 
 import { App, IPidDataInput, PM2_METRICS } from './app';
 import { toUndescore } from '../utils';
-import { PM2BusResponse } from '../types';
 import { getPidsUsage } from '../utils/cpu';
 
 import {
@@ -23,7 +22,7 @@ import {
     deletePromAppInstancesMetrics,
 } from '../metrics';
 
-import { processAppMetrics, deleteAppMetrics } from '../metrics/app';
+import { deleteAppMetrics } from '../metrics/app';
 
 import { getLogger } from '../utils/logger';
 import { getDockerStats } from '../utils/docker';
@@ -185,12 +184,6 @@ const detectActiveApps = () => {
             }
         }
 
-        // Collect statistic from apps. Do it after all APPS created
-        if (activePM2Ids.size > 0) {
-            // logger.debug(`Collect app metrics from PIDs ${Array.from(activePM2Ids)}`);
-            sendCollectStaticticBusEvent(Array.from(activePM2Ids));
-        }
-
         // Update metric with available apps
         metricAvailableApps?.set(Object.keys(APPS).length);
 
@@ -259,8 +252,6 @@ const detectActiveApps = () => {
 };
 
 export const startPm2Connect = (conf: IConfig) => {
-    const logger = getLogger();
-
     pm2.connect((err) => {
         if (err) return console.error(err.stack || err);
 
@@ -276,38 +267,6 @@ export const startPm2Connect = (conf: IConfig) => {
         }
 
         detectActiveApps();
-
-        // Collect statistic from running apps
-        pm2.launchBus((err, bus): void => {
-            if (err) return console.error(err.stack || err);
-
-            logger.debug('Start bus listener');
-
-            bus.on('process:msg', (packet: PM2BusResponse): void => {
-                if (
-                    packet.process &&
-                    packet.raw &&
-                    packet.raw.topic === 'pm2-prom-module:metrics' &&
-                    packet.raw.data
-                ) {
-                    const { name, pm_id } = packet.process;
-
-                    /*logger.debug(
-                        `Got message from app=${name} and pid=${pm_id}. Message=${JSON.stringify(
-                            packet.raw.data
-                        )}`
-                    );*/
-
-                    if (name && APPS[name] && packet.raw.data.metrics) {
-                        processAppMetrics(conf, {
-                            pmId: pm_id,
-                            appName: name,
-                            appResponse: packet.raw.data,
-                        });
-                    }
-                }
-            });
-        });
 
         // Start timer to update available apps
         setInterval(() => {
@@ -369,26 +328,5 @@ function processWorkingApp(workingApp: App) {
                 );
             }
         });
-    });
-}
-
-function sendCollectStaticticBusEvent(pm2Ids: number[]) {
-    // Request available metrics from all running apps
-    pm2Ids.forEach((pm2id) => {
-        pm2.sendDataToProcessId(
-            pm2id,
-            {
-                topic: 'pm2-prom-module:collect',
-                data: {},
-                // Required fields by pm2 but we do not use them
-                id: pm2id,
-            },
-            (err) => {
-                if (err)
-                    return console.error(
-                        `pm2-prom-module: sendDataToProcessId ${err.stack || err}`
-                    );
-            }
-        );
     });
 }

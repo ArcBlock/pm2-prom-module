@@ -1,13 +1,13 @@
 import { access, constants, readFile } from 'node:fs/promises';
 import os from 'node:os';
 import { getCpuCount } from './cpu';
-import { $ } from 'zx';
-import xbytes from 'xbytes';
+import Docker from 'dockerode';
 import getIP from '@abtnode/util/lib/get-ip';
 import { v4 as internalIpV4 } from 'internal-ip';
+import uniq from 'lodash/uniq';
 
-// 禁用命令和结果的自动输出
-$.verbose = false;
+// 初始化 Docker 客户端
+const docker = new Docker();
 
 //const MEMORY_AVAILABLE = '/sys/fs/cgroup/memory.limit_in_bytes';
 //const MEMORY_USED = '/sys/fs/cgroup/memory.usage_in_bytes';
@@ -152,43 +152,80 @@ export const getCPULimit = async () => {
     return count;
 };
 
-export async function getDockerStats(ids: string[]): Promise<
-    {
-        name: string;
-        cpuUsage: number;
-        memoryUsage: number;
-        totalMemory: number;
-    }[]
-> {
+type DockerStats = {
+    name: string;
+    cpuUsage: number;
+    memoryUsage: number;
+    totalMemory: number;
+};
+
+/**
+ * 获取单个容器的统计信息
+ */
+async function getContainerStats(containerId: string): Promise<DockerStats | null> {
+    try {
+        const container = docker.getContainer(containerId);
+        const stats = await container.stats({ stream: false });
+        
+        // 内存使用信息
+        const memoryUsage = stats.memory_stats?.usage || 0;
+        const memoryLimit = stats.memory_stats?.limit || 0;
+        
+        // CPU使用信息
+        const cpuStats = stats.cpu_stats?.cpu_usage;
+        const preCpuStats = stats.precpu_stats?.cpu_usage;
+        
+        let cpuPercent = 0;
+        if (cpuStats && preCpuStats && stats.cpu_stats?.system_cpu_usage && stats.precpu_stats?.system_cpu_usage) {
+            // 计算容器CPU使用时间的增量（纳秒）
+            const cpuDelta = cpuStats.total_usage - preCpuStats.total_usage;
+            // 计算系统CPU时间的增量（纳秒）
+            const systemDelta = stats.cpu_stats.system_cpu_usage - stats.precpu_stats.system_cpu_usage;
+            
+            if (systemDelta > 0 && cpuDelta >= 0) {
+                // 获取系统可用的CPU核心数
+                const onlineCpus = stats.cpu_stats?.online_cpus || os.cpus().length;
+                
+                // Docker CPU使用率计算公式：
+                // CPU% = (容器CPU增量 / 系统CPU增量) * CPU核心数 * 100%
+                // 
+                // 解释：
+                // - cpuDelta: 容器在两次采样间隔内使用的CPU时间
+                // - systemDelta: 系统在两次采样间隔内所有CPU核心的总时间
+                // - 比值 (cpuDelta/systemDelta) 表示容器占用系统总CPU时间的比例
+                // - 乘以核心数是因为Docker的统计方式：单核100%使用时，在N核系统上显示为N*100%
+                cpuPercent = (cpuDelta / systemDelta) * onlineCpus * 100;
+                
+                // 确保结果为非负数且不超过理论最大值
+                cpuPercent = Math.max(0, Math.min(cpuPercent, onlineCpus * 100));
+            }
+        }
+        
+        return {
+            name: containerId,
+            cpuUsage: Math.round(cpuPercent * 100) / 100, // 保留2位小数
+            memoryUsage: memoryUsage,
+            totalMemory: memoryLimit,
+        };
+    } catch (error) {
+        console.error(`Failed to get stats for container ${containerId}:`, error.message);
+        return null;
+    }
+}
+
+export async function getDockerStats(ids: string[]): Promise<DockerStats[]> {
     try {
         if (!ids.length) {
             return [];
         }
-        const result = await $`docker stats --no-stream --format "{{json .}}" -a`;
-        if (result.exitCode || !result.stdout) {
-            return [];
-        }
-        const statsRows = result.stdout
-            .split('\n')
-            .filter(Boolean)
-            .map((x: string) => JSON.parse(x));
-        const stats = statsRows.map((x: any) => {
-            const [memoryUsage, totalMemory] = x.MemUsage.split('/').map((x: string) =>
-                xbytes.parseSize(x.trim())
-            );
-            return {
-                name: x.Name,
-                cpuUsage: +x.CPUPerc.replace('%', ''),
-                memoryUsage: memoryUsage,
-                totalMemory: totalMemory,
-            };
-        });
-
-        return ids.map((id) => {
-            return stats.find((x) => x.name === id);
-        });
+        
+        // 并行获取所有容器的统计信息
+        const results = await Promise.all(uniq(ids).map(id => getContainerStats(id)));
+        
+        // 过滤出成功的结果
+        return results.filter((stat): stat is DockerStats => stat !== null);
     } catch (error) {
-        console.error(error);
+        console.error('Error getting Docker stats:', error);
         return [];
     }
 }

@@ -1,3 +1,7 @@
+## 2.6.5 (2025-8-18)
+
+- fix: memory leak of God Daemon caused by module operation
+
 ## 2.6.4 (2025-6-27)
 
 - fix: redundant exported blocklet server information
