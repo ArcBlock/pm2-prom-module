@@ -1,4 +1,7 @@
 onlyBuiltDependencies:
   - core-js
+  - cpu-features
   - fast-folder-size
+  - protobufjs
   - sqlite3
+  - ssh2
