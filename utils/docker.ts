@@ -177,18 +177,33 @@ async function getContainerStats(containerId: string): Promise<DockerStats | nul
         
         let cpuPercent = 0;
         if (cpuStats && preCpuStats && stats.cpu_stats?.system_cpu_usage && stats.precpu_stats?.system_cpu_usage) {
+            // 计算容器CPU使用时间的增量（纳秒）
             const cpuDelta = cpuStats.total_usage - preCpuStats.total_usage;
+            // 计算系统CPU时间的增量（纳秒）
             const systemDelta = stats.cpu_stats.system_cpu_usage - stats.precpu_stats.system_cpu_usage;
-            const onlineCpus = stats.cpu_stats?.online_cpus || 1;
             
-            if (systemDelta > 0) {
+            if (systemDelta > 0 && cpuDelta >= 0) {
+                // 获取系统可用的CPU核心数
+                const onlineCpus = stats.cpu_stats?.online_cpus || os.cpus().length;
+                
+                // Docker CPU使用率计算公式：
+                // CPU% = (容器CPU增量 / 系统CPU增量) * CPU核心数 * 100%
+                // 
+                // 解释：
+                // - cpuDelta: 容器在两次采样间隔内使用的CPU时间
+                // - systemDelta: 系统在两次采样间隔内所有CPU核心的总时间
+                // - 比值 (cpuDelta/systemDelta) 表示容器占用系统总CPU时间的比例
+                // - 乘以核心数是因为Docker的统计方式：单核100%使用时，在N核系统上显示为N*100%
                 cpuPercent = (cpuDelta / systemDelta) * onlineCpus * 100;
+                
+                // 确保结果为非负数且不超过理论最大值
+                cpuPercent = Math.max(0, Math.min(cpuPercent, onlineCpus * 100));
             }
         }
         
         return {
             name: containerId,
-            cpuUsage: Math.round(cpuPercent * 10) / 10, // 保留1位小数
+            cpuUsage: Math.round(cpuPercent * 100) / 100, // 保留2位小数
             memoryUsage: memoryUsage,
             totalMemory: memoryLimit,
         };
