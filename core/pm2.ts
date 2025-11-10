@@ -282,7 +282,7 @@ const detectActiveApps = () => {
                         };
                     };
                 }),
-            { concurrency: 16 }
+            { concurrency: 8 }
         ).then((apps: Array<{ appName: string; urls: Array<string> }>) => {
             for (const app of apps) {
                 for (const url of app.urls) {
