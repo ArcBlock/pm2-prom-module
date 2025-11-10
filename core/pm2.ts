@@ -65,6 +65,7 @@ const updateAppPidsData = (workingApp: App, pidData: IPidDataInput) => {
         status: pidData.status,
         appUrl: pidData.appUrl,
         appName: pidData.appName,
+        appPid: pidData.appPid,
     });
 };
 
@@ -120,6 +121,7 @@ const detectActiveApps = () => {
                     status: pm2_env.status,
                     appUrl: pm2_env.BLOCKLET_APP_URL!,
                     appName: pm2_env.BLOCKLET_APP_NAME!,
+                    appPid: pm2_env.BLOCKLET_APP_PID!,
                 };
             }
         });
@@ -278,16 +280,17 @@ const detectActiveApps = () => {
                     return async () => {
                         return {
                             appName: app.appName,
+                            appPid: app.appPid,
                             urls: await getAppDomainList(app.appUrl),
                         };
                     };
                 }),
             { concurrency: 8 }
-        ).then((apps: Array<{ appName: string; urls: Array<string> }>) => {
+        ).then((apps: Array<{ appName: string; urls: Array<string>; appPid: string }>) => {
             for (const app of apps) {
                 for (const url of app.urls) {
                     metricAppDomainList?.set(
-                        { appName: app.appName, domain: url },
+                        { appName: app.appName, domain: url, appPid: app.appPid },
                         app.urls.length
                     );
                 }

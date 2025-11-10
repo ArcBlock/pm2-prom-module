@@ -1,3 +1,7 @@
+## 2.6.7 (2025-11-10)
+
+- feat: support expose appPid
+
 ## 2.6.6 (2025-11-10)
 
 - feat: support app domain list metrics
