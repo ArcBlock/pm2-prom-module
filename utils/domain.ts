@@ -14,7 +14,7 @@ const appDomainListCache = new Keyv<string[]>({
     }),
     // 默认缓存一个小时
     ttl: 1000 * 60 * 60,
-}); 
+});
 
 export async function getAppDomainList(url: string): Promise<string[]> {
 
