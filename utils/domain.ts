@@ -7,6 +7,7 @@ import KeyvSqlite from '@keyv/sqlite';
 
 const appDomainListCache = new Keyv<string[]>({
     store: new KeyvSqlite({
+        // 这里只能相对路径才能工作
         uri: 'sqlite://./cache.db',
         table: 'app_domain_list_cache',
         busyTimeout: 10_000,
