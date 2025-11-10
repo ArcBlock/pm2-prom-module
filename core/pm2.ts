@@ -20,12 +20,14 @@ import {
     metricAppStatus,
     deletePromAppMetrics,
     deletePromAppInstancesMetrics,
+    metricAppDomainList,
 } from '../metrics';
 
 import { deleteAppMetrics } from '../metrics/app';
 
 import { getLogger } from '../utils/logger';
 import { getDockerStats } from '../utils/docker';
+import { getAppUrls } from '../utils/domain';
 
 type IPidsData = Record<number, IPidDataInput>;
 type IAppData = Record<string, { pids: number[]; restartsSum: number; status?: Pm2Env['status'] }>;
@@ -59,6 +61,8 @@ const updateAppPidsData = (workingApp: App, pidData: IPidDataInput) => {
         createdAt: pidData.createdAt,
         metrics: pidData.metrics,
         status: pidData.status,
+        appUrl: pidData.appUrl,
+        appName: pidData.appName,
     });
 };
 
@@ -112,6 +116,8 @@ const detectActiveApps = () => {
                     createdAt: pm2_env.created_at || 0,
                     metrics: pm2_env.axm_monitor,
                     status: pm2_env.status,
+                    appUrl: pm2_env.BLOCKLET_APP_URL!,
+                    appName: pm2_env.BLOCKLET_APP_NAME!,
                 };
             }
         });
@@ -248,6 +254,30 @@ const detectActiveApps = () => {
             .catch((err) => {
                 console.error(err.stack || err);
             });
+
+       Promise.all(
+            Object.keys(pidsMonit).map( (pid) => {
+                const app = pidsMonit[pid] as IPidDataInput;
+
+                return app;
+            }).map(async (app) => {
+                return {
+                    appName: app.appName,
+                    urls: await getAppUrls(app.appUrl),
+                };
+            })
+        ).then((apps: Array<{ appName: string; urls: Array<string> }>) => {
+
+            for (const app of apps) {
+                for(const url of app.urls) {
+                    console.error('debug233.url', url);
+                    metricAppDomainList?.set({ appName: app.appName, domain: url }, app.urls.length);
+                }
+            }
+            
+            // console.error('debug233.appUrls', apps);
+            // metricAppDomainList.set({}, apps.map((entry) => entry.urls));
+        })
     });
 };
 

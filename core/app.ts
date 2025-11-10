@@ -10,6 +10,8 @@ export type IPidDataInput = {
     createdAt: number;
     metrics?: { [key: string]: AxmMonitor };
     status: Pm2Env['status'];
+    appUrl: string;
+    appName: string;
 };
 
 type IMetrics = { [key: string]: number };
@@ -22,6 +24,8 @@ type IPidData = {
     restartCount: number;
     metrics: IMetrics;
     status: Pm2Env['status'];
+    appUrl: string;
+    appName: string;
 };
 
 const MONIT_ITEMS_LIMIT = 30;
@@ -91,6 +95,8 @@ export class App {
                 restartCount: pidData.restartCount,
                 metrics: this.fillMetricsData(pidData.metrics),
                 status: pidData.status,
+                appUrl: pidData.appUrl,
+                appName: pidData.appName,
             };
         } else {
             const memoryValues = [pidData.memory, ...this.pids[pid].memory].slice(
