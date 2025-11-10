@@ -3,6 +3,7 @@ import pm2, { Pm2Env } from 'pm2';
 import { App, IPidDataInput, PM2_METRICS } from './app';
 import { toUndescore } from '../utils';
 import { getPidsUsage } from '../utils/cpu';
+import keyBy from 'lodash/keyBy';
 
 import {
     initDynamicGaugeMetricClients,
@@ -256,10 +257,20 @@ const detectActiveApps = () => {
                 console.error(err.stack || err);
             });
 
+        const uniqAppMaps: Record<string, any> = keyBy(
+            // @ts-expect-error
+            apps.filter((x) => x.pm2_env?.BLOCKLET_APP_PID!),
+            (x) => x.pm2_env?.BLOCKLET_APP_PID!
+        );
         pAll(
-            Object.keys(pidsMonit)
+            Object.values(uniqAppMaps)
+                .map((x) => x.pid)
                 .map((pid) => {
                     const app = pidsMonit[pid] as IPidDataInput;
+
+                    if (!app) {
+                        throw new Error(`App ${pid} does not have active PIDs. Clear app metrics`);
+                    }
 
                     return app;
                 })
@@ -271,7 +282,7 @@ const detectActiveApps = () => {
                         };
                     };
                 }),
-                { concurrency: 16 }
+            { concurrency: 16 }
         ).then((apps: Array<{ appName: string; urls: Array<string> }>) => {
             for (const app of apps) {
                 for (const url of app.urls) {

@@ -25,5 +25,6 @@ declare module 'pm2' {
         BLOCKLET_DOCKER_NAME: string | undefined;
         BLOCKLET_APP_URL: string | undefined;
         BLOCKLET_APP_NAME: string | undefined;
+        BLOCKLET_APP_PID: string | undefined;
     };
 }
