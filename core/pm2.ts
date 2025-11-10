@@ -292,7 +292,7 @@ const detectActiveApps = () => {
                     );
                 }
             }
-        });
+        }).catch(error => console.error(error));
     });
 };
 
