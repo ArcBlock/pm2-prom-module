@@ -28,6 +28,7 @@ import { deleteAppMetrics } from '../metrics/app';
 import { getLogger } from '../utils/logger';
 import { getDockerStats } from '../utils/docker';
 import { getAppDomainList } from '../utils/domain';
+import pAll from 'p-all';
 
 type IPidsData = Record<number, IPidDataInput>;
 type IAppData = Record<string, { pids: number[]; restartsSum: number; status?: Pm2Env['status'] }>;
@@ -255,25 +256,32 @@ const detectActiveApps = () => {
                 console.error(err.stack || err);
             });
 
-       Promise.all(
-            Object.keys(pidsMonit).map( (pid) => {
-                const app = pidsMonit[pid] as IPidDataInput;
+        pAll(
+            Object.keys(pidsMonit)
+                .map((pid) => {
+                    const app = pidsMonit[pid] as IPidDataInput;
 
-                return app;
-            }).map(async (app) => {
-                return {
-                    appName: app.appName,
-                    urls: await getAppDomainList(app.appUrl),
-                };
-            })
+                    return app;
+                })
+                .map((app) => {
+                    return async () => {
+                        return {
+                            appName: app.appName,
+                            urls: await getAppDomainList(app.appUrl),
+                        };
+                    };
+                }),
+                { concurrency: 16 }
         ).then((apps: Array<{ appName: string; urls: Array<string> }>) => {
-
             for (const app of apps) {
-                for(const url of app.urls) {
-                    metricAppDomainList?.set({ appName: app.appName, domain: url }, app.urls.length);
+                for (const url of app.urls) {
+                    metricAppDomainList?.set(
+                        { appName: app.appName, domain: url },
+                        app.urls.length
+                    );
                 }
             }
-        })
+        });
     });
 };
 
