@@ -11,6 +11,9 @@ importers:
       '@abtnode/util':
         specifier: ^1.16.44
         version: 1.16.48
+      '@keyv/sqlite':
+        specifier: ^4.0.6
+        version: 4.0.6(keyv@5.5.3)
       '@types/dockerode':
         specifier: ^3.3.42
         version: 3.3.42
@@ -165,6 +168,12 @@ packages:
 
   '@keyv/serialize@1.1.1':
     resolution: {integrity: sha512-dXn3FZhPv0US+7dtJsIi2R+c7qWYiReoEh5zUntWCf4oSpMNib8FDhSoed6m3QyZdx5hK7iLFkYk3rNxwt8vTA==}
+
+  '@keyv/sqlite@4.0.6':
+    resolution: {integrity: sha512-xfUYps2HtxuQFsZlXv3qTs9p9mJMOSlNmCnd9R4UYxFlQJ1qLnKT+P0vjhQX9HBwnhKuhsinkmwTbooYFeFr4A==}
+    engines: {node: '>= 18'}
+    peerDependencies:
+      keyv: ^5.5.3
 
   '@leichtgewicht/ip-codec@2.0.5':
     resolution: {integrity: sha512-Vo+PSpZG2/fmgmiNzYK9qWRh8h/CHrwD0mo1h1DzL4yzHNSfWYujGTYsWGreD000gcgmZ7K4Ys6Tx9TxtsKdDw==}
@@ -3293,6 +3302,14 @@ snapshots:
   '@js-sdsl/ordered-map@4.4.2': {}
 
   '@keyv/serialize@1.1.1': {}
+
+  '@keyv/sqlite@4.0.6(keyv@5.5.3)':
+    dependencies:
+      keyv: 5.5.3
+      sqlite3: 5.1.7
+    transitivePeerDependencies:
+      - bluebird
+      - supports-color
 
   '@leichtgewicht/ip-codec@2.0.5': {}
 

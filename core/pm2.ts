@@ -27,7 +27,7 @@ import { deleteAppMetrics } from '../metrics/app';
 
 import { getLogger } from '../utils/logger';
 import { getDockerStats } from '../utils/docker';
-import { getAppUrls } from '../utils/domain';
+import { getAppDomainList } from '../utils/domain';
 
 type IPidsData = Record<number, IPidDataInput>;
 type IAppData = Record<string, { pids: number[]; restartsSum: number; status?: Pm2Env['status'] }>;
@@ -263,20 +263,16 @@ const detectActiveApps = () => {
             }).map(async (app) => {
                 return {
                     appName: app.appName,
-                    urls: await getAppUrls(app.appUrl),
+                    urls: await getAppDomainList(app.appUrl),
                 };
             })
         ).then((apps: Array<{ appName: string; urls: Array<string> }>) => {
 
             for (const app of apps) {
                 for(const url of app.urls) {
-                    console.error('debug233.url', url);
                     metricAppDomainList?.set({ appName: app.appName, domain: url }, app.urls.length);
                 }
             }
-            
-            // console.error('debug233.appUrls', apps);
-            // metricAppDomainList.set({}, apps.map((entry) => entry.urls));
         })
     });
 };

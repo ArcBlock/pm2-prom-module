@@ -8,6 +8,7 @@
     "main": "index.js",
     "dependencies": {
         "@abtnode/util": "^1.16.44",
+        "@keyv/sqlite": "^4.0.6",
         "@types/dockerode": "^3.3.42",
         "axios": "^1.13.2",
         "dockerode": "^4.0.7",

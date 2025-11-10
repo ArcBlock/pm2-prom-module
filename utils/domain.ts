@@ -3,10 +3,19 @@ import isUrl from 'is-url';
 import isEmpty from 'lodash/isEmpty';
 import { joinURL } from 'ufo';
 import Keyv from 'keyv';
+import KeyvSqlite from '@keyv/sqlite';
 
-const appUrlsCache = new Keyv<string[]>(); 
+const appDomainListCache = new Keyv<string[]>({
+    store: new KeyvSqlite({
+        uri: 'sqlite://./cache.db',
+        table: 'app_domain_list_cache',
+        busyTimeout: 10_000,
+    }),
+    // 默认缓存一个小时
+    ttl: 1000 * 60 * 60,
+}); 
 
-export async function getAppUrls(url: string): Promise<string[]> {
+export async function getAppDomainList(url: string): Promise<string[]> {
 
     try {
         if (!url) {
@@ -15,15 +24,14 @@ export async function getAppUrls(url: string): Promise<string[]> {
         if (!isUrl(url)) {
             return [url];
         }
-        if (await appUrlsCache.has(url)) {
-            return await appUrlsCache.get(url) as string[];
+        if (await appDomainListCache.has(url)) {
+            return await appDomainListCache.get(url) as string[];
         }
 
         const response = await axios.get(joinURL(url, '__blocklet__.js?type=json'));
-        console.error('debug233.response.data', response.data);
         const domainAliases = response.data?.domainAliases || [];
         if (!isEmpty(domainAliases)) {
-            await appUrlsCache.set(url, domainAliases);
+            await appDomainListCache.set(url, domainAliases);
         }
 
         return domainAliases || [url];
