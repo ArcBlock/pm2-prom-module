@@ -3,6 +3,7 @@ import pm2, { Pm2Env } from 'pm2';
 import { App, IPidDataInput, PM2_METRICS } from './app';
 import { toUndescore } from '../utils';
 import { getPidsUsage } from '../utils/cpu';
+import keyBy from 'lodash/keyBy';
 
 import {
     initDynamicGaugeMetricClients,
@@ -20,12 +21,15 @@ import {
     metricAppStatus,
     deletePromAppMetrics,
     deletePromAppInstancesMetrics,
+    metricAppDomainList,
 } from '../metrics';
 
 import { deleteAppMetrics } from '../metrics/app';
 
 import { getLogger } from '../utils/logger';
 import { getDockerStats } from '../utils/docker';
+import { getAppDomainList } from '../utils/domain';
+import pAll from 'p-all';
 
 type IPidsData = Record<number, IPidDataInput>;
 type IAppData = Record<string, { pids: number[]; restartsSum: number; status?: Pm2Env['status'] }>;
@@ -59,6 +63,8 @@ const updateAppPidsData = (workingApp: App, pidData: IPidDataInput) => {
         createdAt: pidData.createdAt,
         metrics: pidData.metrics,
         status: pidData.status,
+        appUrl: pidData.appUrl,
+        appName: pidData.appName,
     });
 };
 
@@ -112,6 +118,8 @@ const detectActiveApps = () => {
                     createdAt: pm2_env.created_at || 0,
                     metrics: pm2_env.axm_monitor,
                     status: pm2_env.status,
+                    appUrl: pm2_env.BLOCKLET_APP_URL!,
+                    appName: pm2_env.BLOCKLET_APP_NAME!,
                 };
             }
         });
@@ -248,6 +256,43 @@ const detectActiveApps = () => {
             .catch((err) => {
                 console.error(err.stack || err);
             });
+
+        const uniqAppMaps: Record<string, any> = keyBy(
+            // @ts-expect-error
+            apps.filter((x) => x.pm2_env?.BLOCKLET_APP_PID!),
+            (x) => x.pm2_env?.BLOCKLET_APP_PID!
+        );
+        pAll(
+            Object.values(uniqAppMaps)
+                .map((x) => x.pid)
+                .map((pid) => {
+                    const app = pidsMonit[pid] as IPidDataInput;
+
+                    if (!app) {
+                        throw new Error(`App ${pid} does not have active PIDs. Clear app metrics`);
+                    }
+
+                    return app;
+                })
+                .map((app) => {
+                    return async () => {
+                        return {
+                            appName: app.appName,
+                            urls: await getAppDomainList(app.appUrl),
+                        };
+                    };
+                }),
+            { concurrency: 8 }
+        ).then((apps: Array<{ appName: string; urls: Array<string> }>) => {
+            for (const app of apps) {
+                for (const url of app.urls) {
+                    metricAppDomainList?.set(
+                        { appName: app.appName, domain: url },
+                        app.urls.length
+                    );
+                }
+            }
+        }).catch(error => console.error(error));
     });
 };
 

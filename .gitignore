@@ -5,3 +5,5 @@ dist
 *.js
 !.prettierrx.js
 test.sh
+
+cache.db
