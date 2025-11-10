@@ -160,7 +160,7 @@ export const initMetrics = (prefix: string) => {
         name: `${prefix}_${METRIC_APP_DOMAIN_LIST}`,
         help: 'Show app domain list',
         registers: [registry],
-        labelNames: ['appName', 'domain'],
+        labelNames: ['appName', 'domain', 'appPid'],
     });
 
     metricAppAverageMemory = new client.Gauge({

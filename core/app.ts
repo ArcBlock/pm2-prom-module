@@ -12,6 +12,7 @@ export type IPidDataInput = {
     status: Pm2Env['status'];
     appUrl: string;
     appName: string;
+    appPid: string;
 };
 
 type IMetrics = { [key: string]: number };
@@ -26,6 +27,7 @@ type IPidData = {
     status: Pm2Env['status'];
     appUrl: string;
     appName: string;
+    appPid: string;
 };
 
 const MONIT_ITEMS_LIMIT = 30;
@@ -97,6 +99,7 @@ export class App {
                 status: pidData.status,
                 appUrl: pidData.appUrl,
                 appName: pidData.appName,
+                appPid: pidData.appPid,
             };
         } else {
             const memoryValues = [pidData.memory, ...this.pids[pid].memory].slice(
