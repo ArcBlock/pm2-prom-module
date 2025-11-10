@@ -1,3 +1,7 @@
+## 2.6.6 (2025-11-10)
+
+- feat: support app domain list metrics
+
 ## 2.6.5 (2025-8-18)
 
 - fix: memory leak of God Daemon caused by module operation
