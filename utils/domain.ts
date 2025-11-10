@@ -1,4 +1,3 @@
-import axios from 'axios';
 import isUrl from 'is-url';
 import isEmpty from 'lodash/isEmpty';
 import { joinURL } from 'ufo';
@@ -29,8 +28,8 @@ export async function getAppDomainList(url: string): Promise<string[]> {
             return await appDomainListCache.get(url) as string[];
         }
 
-        const response = await axios.get(joinURL(url, '__blocklet__.js?type=json'));
-        const domainAliases = response.data?.domainAliases || [];
+        const response = await fetch(joinURL(url, '__blocklet__.js?type=json'));
+        const domainAliases = (await response.json())?.domainAliases || [];
         if (!isEmpty(domainAliases)) {
             await appDomainListCache.set(url, domainAliases);
         }

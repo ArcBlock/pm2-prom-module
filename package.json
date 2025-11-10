@@ -10,7 +10,6 @@
         "@abtnode/util": "^1.16.44",
         "@keyv/sqlite": "^4.0.6",
         "@types/dockerode": "^3.3.42",
-        "axios": "^1.13.2",
         "dockerode": "^4.0.7",
         "internal-ip": "^6.2.0",
         "is-url": "^1.2.4",
