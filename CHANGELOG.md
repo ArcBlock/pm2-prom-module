@@ -1,3 +1,7 @@
+## 2.6.8 (2025-12-1)
+
+- fix: some runtime anomalies
+
 ## 2.6.7 (2025-11-10)
 
 - feat: support expose appPid
