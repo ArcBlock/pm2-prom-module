@@ -33,9 +33,9 @@ async function main() {
         )} . Then press enter to continue.`
     );
 
-    process.stdin.setRawMode(true);
-    process.stdin.resume();
-    process.stdin.on('data', process.exit.bind(process, 0));
+    process.stdin?.setRawMode(true);
+    process.stdin?.resume();
+    process.stdin?.on('data', process.exit.bind(process, 0));
 }
 
 main();

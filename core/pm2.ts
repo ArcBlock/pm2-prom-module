@@ -209,6 +209,14 @@ const detectActiveApps = () => {
                     for (const [pid, stat] of Object.entries(stats)) {
                         const pidId = Number(pid);
 
+                        if (!stat) {
+                            console.log('debug233', {
+                                pid,
+                                stat,
+                            });
+                            continue;
+                        }
+
                         if (pidId && pidsMonit[pidId]) {
                             pidsMonit[pidId].cpu = Math.round(stat.cpu * 10) / 10;
                             pidsMonit[pidId].memory = stat.memory;
@@ -286,16 +294,18 @@ const detectActiveApps = () => {
                     };
                 }),
             { concurrency: 8 }
-        ).then((apps: Array<{ appName: string; urls: Array<string>; appPid: string }>) => {
-            for (const app of apps) {
-                for (const url of app.urls) {
-                    metricAppDomainList?.set(
-                        { appName: app.appName, domain: url, appPid: app.appPid },
-                        app.urls.length
-                    );
+        )
+            .then((apps: Array<{ appName: string; urls: Array<string>; appPid: string }>) => {
+                for (const app of apps) {
+                    for (const url of app.urls) {
+                        metricAppDomainList?.set(
+                            { appName: app.appName, domain: url, appPid: app.appPid },
+                            app.urls.length
+                        );
+                    }
                 }
-            }
-        }).catch(error => console.error(error));
+            })
+            .catch((error) => console.error(error));
     });
 };
 
