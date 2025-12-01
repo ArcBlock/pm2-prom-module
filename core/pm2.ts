@@ -210,10 +210,6 @@ const detectActiveApps = () => {
                         const pidId = Number(pid);
 
                         if (!stat) {
-                            console.log('debug233', {
-                                pid,
-                                stat,
-                            });
                             continue;
                         }
 
