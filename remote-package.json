@@ -1,0 +1,4 @@
+{
+  "name": "@arcblock/pm2-prom-module",
+  "main": "pm2-prom-module/index.js"
+}

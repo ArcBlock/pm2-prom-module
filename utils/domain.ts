@@ -1,5 +1,4 @@
 import isUrl from 'is-url';
-import isEmpty from 'lodash/isEmpty';
 import { joinURL } from 'ufo';
 import Keyv from 'keyv';
 import KeyvSqlite from '@keyv/sqlite';
@@ -16,7 +15,6 @@ const appDomainListCache = new Keyv<string[]>({
 });
 
 export async function getAppDomainList(url: string): Promise<string[]> {
-
     try {
         if (!url) {
             return [];
@@ -25,16 +23,17 @@ export async function getAppDomainList(url: string): Promise<string[]> {
             return [url];
         }
         if (await appDomainListCache.has(url)) {
-            return await appDomainListCache.get(url) as string[];
+            return (await appDomainListCache.get(url)) as string[];
         }
 
         const response = await fetch(joinURL(url, '__blocklet__.js?type=json'));
-        const domainAliases = (await response.json())?.domainAliases || [];
-        if (!isEmpty(domainAliases)) {
+        const domainAliases = (await response.json())?.domainAliases;
+        if (Array.isArray(domainAliases) && domainAliases.length) {
             await appDomainListCache.set(url, domainAliases);
+            return domainAliases;
         }
 
-        return domainAliases || [url];
+        return [url];
     } catch (error) {
         console.error(error);
         return [url];
