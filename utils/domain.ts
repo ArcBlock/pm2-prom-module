@@ -22,7 +22,7 @@ export async function getAppDomainList(url: string): Promise<string[]> {
         if (!isUrl(url)) {
             return [url];
         }
-        if (await appDomainListCache.has(url)) {
+        if (await appDomainListCache.get(url)) {
             return (await appDomainListCache.get(url)) as string[];
         }
 
