@@ -1,3 +1,7 @@
+## 2.6.9 (2025-12-29)
+
+- fix: app.urls throw error "TypeError: app.urls is not iterable"
+
 ## 2.6.8 (2025-12-1)
 
 - fix: some runtime anomalies

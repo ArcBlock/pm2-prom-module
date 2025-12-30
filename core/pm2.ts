@@ -293,6 +293,9 @@ const detectActiveApps = () => {
         )
             .then((apps: Array<{ appName: string; urls: Array<string>; appPid: string }>) => {
                 for (const app of apps) {
+                    if (!app.urls || !Array.isArray(app.urls)) {
+                        continue;
+                    }
                     for (const url of app.urls) {
                         metricAppDomainList?.set(
                             { appName: app.appName, domain: url, appPid: app.appPid },
