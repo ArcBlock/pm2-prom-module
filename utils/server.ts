@@ -1,21 +1,40 @@
 import { encode } from '@abtnode/util/lib/base32';
 import { joinURL } from 'ufo';
 import axios from 'axios';
+import Keyv from 'keyv';
+
+const serverAdminUrlCache = new Keyv<string>({
+    ttl: 1000 * 60 * 60 * 24, // 1 day
+});
+
+const storeVersionCache = new Keyv<string>({
+    ttl: 1000 * 60 * 5, // 5 minutes
+});
 
 export function getServerUrl(serverDid: string): string {
     return `https://${encode(serverDid)}.did.abtnet.io`;
 }
 
 export async function getServerAdminUrl(serverDid: string): Promise<string> {
+    const cacheKey = serverDid;
+    const cached = await serverAdminUrlCache.get(cacheKey);
+    if (cached) {
+        return cached;
+    }
+
     const serverUrl = getServerUrl(serverDid);
     try {
         const response = await fetch(`${serverUrl}/.well-known/did.json`);
         const data = await response.json();
         const serverService = data.services?.find((service: any) => service.type === 'server');
-        return joinURL(serverUrl, serverService?.path || '/admin/');
+        const adminUrl = joinURL(serverUrl, serverService?.path || '/admin/');
+        await serverAdminUrlCache.set(cacheKey, adminUrl);
+        return adminUrl;
     } catch (error) {
         console.error(error);
-        return joinURL(serverUrl, '/.well-known/server/admin');
+        const fallbackUrl = joinURL(serverUrl, '/.well-known/server/admin');
+        await serverAdminUrlCache.set(cacheKey, fallbackUrl);
+        return fallbackUrl;
     }
 }
 
@@ -29,13 +48,22 @@ export async function getStoreVersion(
     defaultValue: string = '-',
     timeout: number = 5000
 ): Promise<string> {
+    const cacheKey = `${storeUrl}:${did}`;
+    const cached = await storeVersionCache.get(cacheKey);
+    if (cached) {
+        return cached;
+    }
+
     try {
         const response = await axios.get(`${storeUrl}/api/blocklets/${did}/blocklet.json`, {
             timeout,
         });
-        return response.data.version || defaultValue;
+        const version = response.data.version || defaultValue;
+        await storeVersionCache.set(cacheKey, version);
+        return version;
     } catch (error) {
         console.error(error);
+        await storeVersionCache.set(cacheKey, defaultValue);
         return defaultValue;
     }
 }
