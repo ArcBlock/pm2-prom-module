@@ -46,7 +46,7 @@ export async function getStoreVersion(
     storeUrl: StoreUrl,
     did: string,
     defaultValue: string = '-',
-    timeout: number = 5000
+    timeout: number = 20_000
 ): Promise<string> {
     const cacheKey = `${storeUrl}:${did}`;
     const cached = await storeVersionCache.get(cacheKey);
