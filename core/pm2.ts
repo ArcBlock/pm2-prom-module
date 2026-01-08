@@ -31,7 +31,7 @@ import { getLogger } from '../utils/logger';
 import { getDockerStats } from '../utils/docker';
 import { getAppDomainList } from '../utils/domain';
 import pAll from 'p-all';
-import { getServerAdminUrl, getServerUrl, getStoreVersion } from '../utils/server';
+import { getServerAdminUrl, getStoreVersion } from '../utils/server';
 
 type IPidsData = Record<number, IPidDataInput>;
 type IAppData = Record<string, { pids: number[]; restartsSum: number; status?: Pm2Env['status'] }>;
