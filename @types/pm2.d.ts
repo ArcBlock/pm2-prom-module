@@ -26,5 +26,11 @@ declare module 'pm2' {
         BLOCKLET_APP_URL: string | undefined;
         BLOCKLET_APP_NAME: string | undefined;
         BLOCKLET_APP_PID: string | undefined;
+        BLOCKLET_MOUNT_POINTS: string | undefined;
+        TEST_STORE_ENDPOINT: string | undefined;
+        ABT_NODE_DID: string | undefined;
+        BLOCKLET_REAL_NAME: string | undefined;
+        BLOCKLET_COMPONENT_DID: string | undefined;
+        BLOCKLET_COMPONENT_VERSION: string | undefined;
     };
 }
