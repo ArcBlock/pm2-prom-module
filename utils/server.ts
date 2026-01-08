@@ -26,15 +26,16 @@ export type StoreUrl =
 export async function getStoreVersion(
     storeUrl: StoreUrl,
     did: string,
+    defaultValue: string = '-',
     timeout: number = 5000
 ): Promise<string> {
     try {
         const response = await axios.get(`${storeUrl}/api/blocklets/${did}/blocklet.json`, {
             timeout,
         });
-        return response.data.version || '';
+        return response.data.version || defaultValue;
     } catch (error) {
         console.error(error);
-        return '';
+        return defaultValue;
     }
 }
