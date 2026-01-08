@@ -31,7 +31,7 @@ import { getLogger } from '../utils/logger';
 import { getDockerStats } from '../utils/docker';
 import { getAppDomainList } from '../utils/domain';
 import pAll from 'p-all';
-import { getServerUrl, getStoreVersion } from '../utils/server';
+import { getServerAdminUrl, getServerUrl, getStoreVersion } from '../utils/server';
 
 type IPidsData = Record<number, IPidDataInput>;
 type IAppData = Record<string, { pids: number[]; restartsSum: number; status?: Pm2Env['status'] }>;
@@ -322,7 +322,7 @@ const detectActiveApps = () => {
 
                     const appName = pm2_env.BLOCKLET_APP_NAME;
                     const domain = pm2_env.BLOCKLET_APP_URL;
-                    const serverUrl = getServerUrl(pm2_env.ABT_NODE_DID || '');
+                    const serverUrl = await getServerAdminUrl(pm2_env.ABT_NODE_DID || '');
 
                     const componentName = (pm2_env.BLOCKLET_REAL_NAME || '').split('/').pop();
                     const componentDid = pm2_env.BLOCKLET_COMPONENT_DID || '';
