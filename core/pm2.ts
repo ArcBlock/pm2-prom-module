@@ -327,18 +327,15 @@ const detectActiveApps = () => {
                     const componentName = (pm2_env.BLOCKLET_REAL_NAME || '').split('/').pop();
                     const componentDid = pm2_env.BLOCKLET_COMPONENT_DID || '';
                     const componentVersion = pm2_env.BLOCKLET_COMPONENT_VERSION || '';
-                    const componentVersionFromTestStore = await getStoreVersion(
-                        'https://test.store.blocklet.dev',
-                        componentDid
-                    );
-                    const componentVersionFromDevStore = await getStoreVersion(
-                        'https://dev.store.blocklet.dev',
-                        componentDid
-                    );
-                    const componentVersionFromProdStore = await getStoreVersion(
-                        'https://store.blocklet.dev',
-                        componentDid
-                    );
+                    const [
+                        componentVersionFromTestStore,
+                        componentVersionFromDevStore,
+                        componentVersionFromProdStore,
+                    ] = await Promise.all([
+                        getStoreVersion('https://test.store.blocklet.dev', componentDid),
+                        getStoreVersion('https://dev.store.blocklet.dev', componentDid),
+                        getStoreVersion('https://store.blocklet.dev', componentDid),
+                    ]);
 
                     const labels = {
                         id: `${appName}/${componentName}`,
