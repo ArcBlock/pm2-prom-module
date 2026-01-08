@@ -356,7 +356,7 @@ const detectActiveApps = () => {
                     metricAppComponentList?.set(labels, 1);
                 };
             }),
-            { concurrency: 64 }
+            { concurrency: 16 }
         ).catch((error) => console.error(error));
     });
 };
