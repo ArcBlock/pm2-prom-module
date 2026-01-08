@@ -27,6 +27,10 @@
     "scripts": {
         "predev": "export PM2_HOME=~/.arcblock/abtnode && pm2 delete @arcblock/pm2-prom-module && pm2 uninstall @arcblock/pm2-prom-module || true && npm run build",
         "dev": "export PM2_HOME=~/.arcblock/abtnode && pm2 install .",
+        "predev:ec2-user": "export PM2_HOME=/home/ec2-user/.arcblock/abtnode && pm2 delete @arcblock/pm2-prom-module && pm2 uninstall @arcblock/pm2-prom-module || true && npm run build",
+        "dev:ec2-user": "export PM2_HOME=/home/ec2-user/.arcblock/abtnode && pm2 install .",
+        "predev:gcp": "export PM2_HOME=/home/arcblock/.arcblock/abtnode && pm2 delete @arcblock/pm2-prom-module && pm2 uninstall @arcblock/pm2-prom-module || true && npm run build",
+        "dev:gcp": "export PM2_HOME=/home/arcblock/.arcblock/abtnode && pm2 install .",
         "build": "tsc -p tsconfig.json",
         "watch": "tsc -w -p tsconfig.json",
         "release": "npm run build && npm publish",
