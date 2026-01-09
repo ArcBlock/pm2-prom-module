@@ -33,6 +33,7 @@ import { getAppDomainList } from '../utils/domain';
 import pAll from 'p-all';
 import { getServerAdminUrl, getStoreVersion } from '../utils/server';
 import { cpus } from 'node:os';
+import semver from 'semver';
 
 type IPidsData = Record<number, IPidDataInput>;
 type IAppData = Record<string, { pids: number[]; restartsSum: number; status?: Pm2Env['status'] }>;
@@ -337,6 +338,19 @@ const detectActiveApps = () => {
                         getStoreVersion('https://dev.store.blocklet.dev', componentDid),
                         getStoreVersion('https://store.blocklet.dev', componentDid),
                     ]);
+                    const needUpdate: 'true' | 'false' = [
+                        componentVersionFromTestStore,
+                        componentVersionFromDevStore,
+                        componentVersionFromProdStore,
+                    ].some((version) => {
+                        return (
+                            semver.valid(version) &&
+                            semver.valid(componentVersion) &&
+                            semver.gt(version, componentVersion)
+                        );
+                    })
+                        ? 'true'
+                        : 'false';
 
                     const labels = {
                         id: `${appName}/${componentName}`,
@@ -349,6 +363,7 @@ const detectActiveApps = () => {
                         componentVersionFromTestStore,
                         componentVersionFromDevStore,
                         componentVersionFromProdStore,
+                        needUpdate,
                         serverUrl,
                     };
                     metricAppComponentList?.set(labels, 1);

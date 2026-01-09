@@ -180,6 +180,7 @@ export const initMetrics = (prefix: string) => {
             'componentVersionFromTestStore',
             'componentVersionFromDevStore',
             'componentVersionFromProdStore',
+            'needUpdate',
             'serverUrl',
         ],
     });
