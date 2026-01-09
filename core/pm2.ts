@@ -338,7 +338,7 @@ const detectActiveApps = () => {
                         getStoreVersion('https://dev.store.blocklet.dev', componentDid),
                         getStoreVersion('https://store.blocklet.dev', componentDid),
                     ]);
-                    const needUpdate: 'true' | 'false' = [
+                    const needUpdate: '1' | '0' = [
                         componentVersionFromTestStore,
                         componentVersionFromDevStore,
                         componentVersionFromProdStore,
@@ -349,8 +349,8 @@ const detectActiveApps = () => {
                             semver.gt(version, componentVersion)
                         );
                     })
-                        ? 'true'
-                        : 'false';
+                        ? '1'
+                        : '0';
 
                     const labels = {
                         id: `${appName}/${componentName}`,
