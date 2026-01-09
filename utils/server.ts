@@ -62,7 +62,6 @@ export async function getStoreVersion(
         await storeVersionCache.set(cacheKey, version);
         return version;
     } catch (error) {
-        console.error(error);
         await storeVersionCache.set(cacheKey, defaultValue);
         return defaultValue;
     }
