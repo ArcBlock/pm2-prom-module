@@ -32,6 +32,7 @@ import { getDockerStats } from '../utils/docker';
 import { getAppDomainList } from '../utils/domain';
 import pAll from 'p-all';
 import { getServerAdminUrl, getStoreVersion } from '../utils/server';
+import { cpus } from 'node:os';
 
 type IPidsData = Record<number, IPidDataInput>;
 type IAppData = Record<string, { pids: number[]; restartsSum: number; status?: Pm2Env['status'] }>;
@@ -353,7 +354,7 @@ const detectActiveApps = () => {
                     metricAppComponentList?.set(labels, 1);
                 };
             }),
-            { concurrency: 16 }
+            { concurrency: cpus().length }
         ).catch((error) => console.error(error));
     });
 };
