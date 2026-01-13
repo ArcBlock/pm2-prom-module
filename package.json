@@ -10,6 +10,8 @@
         "@abtnode/util": "^1.16.44",
         "@keyv/sqlite": "^4.0.6",
         "@types/dockerode": "^3.3.42",
+        "axios": "^1.13.2",
+        "debug": "^4.4.3",
         "dockerode": "^4.0.7",
         "internal-ip": "^6.2.0",
         "is-url": "^1.2.4",
@@ -20,6 +22,7 @@
         "pm2": "^6.0.8",
         "pmx": "beta",
         "prom-client": "^15.1.3",
+        "semver": "^7.7.3",
         "ufo": "^1.6.1",
         "xbytes": "^1.9.1",
         "zx": "^8.8.0"
@@ -27,6 +30,10 @@
     "scripts": {
         "predev": "export PM2_HOME=~/.arcblock/abtnode && pm2 delete @arcblock/pm2-prom-module && pm2 uninstall @arcblock/pm2-prom-module || true && npm run build",
         "dev": "export PM2_HOME=~/.arcblock/abtnode && pm2 install .",
+        "predev:ec2-user": "export PM2_HOME=/home/ec2-user/.arcblock/abtnode && pm2 delete @arcblock/pm2-prom-module && pm2 uninstall @arcblock/pm2-prom-module || true && npm run build",
+        "dev:ec2-user": "export PM2_HOME=/home/ec2-user/.arcblock/abtnode && pm2 install .",
+        "predev:gcp": "export PM2_HOME=/home/arcblock/.arcblock/abtnode && pm2 delete @arcblock/pm2-prom-module && pm2 uninstall @arcblock/pm2-prom-module || true && npm run build",
+        "dev:gcp": "export PM2_HOME=/home/arcblock/.arcblock/abtnode && pm2 install .",
         "build": "tsc -p tsconfig.json",
         "watch": "tsc -w -p tsconfig.json",
         "release": "npm run build && npm publish",

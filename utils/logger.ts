@@ -1,3 +1,8 @@
+import Debug from 'debug';
+const { name } = require('../package.json');
+
+export const debug = Debug(name);
+
 class SimpleLogger {
     private readonly isDebug: boolean = false;
 

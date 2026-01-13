@@ -22,6 +22,7 @@ import {
     deletePromAppMetrics,
     deletePromAppInstancesMetrics,
     metricAppDomainList,
+    metricAppComponentList,
 } from '../metrics';
 
 import { deleteAppMetrics } from '../metrics/app';
@@ -30,6 +31,9 @@ import { getLogger } from '../utils/logger';
 import { getDockerStats } from '../utils/docker';
 import { getAppDomainList } from '../utils/domain';
 import pAll from 'p-all';
+import { getServerAdminUrl, getStoreVersion } from '../utils/server';
+import { cpus } from 'node:os';
+import semver from 'semver';
 
 type IPidsData = Record<number, IPidDataInput>;
 type IAppData = Record<string, { pids: number[]; restartsSum: number; status?: Pm2Env['status'] }>;
@@ -305,6 +309,68 @@ const detectActiveApps = () => {
                 }
             })
             .catch((error) => console.error(error));
+
+        // Collect component list for each app
+        metricAppComponentList?.reset();
+        pAll(
+            apps.map((appInstance: pm2.ProcessDescription) => {
+                return async () => {
+                    const pm2_env = appInstance.pm2_env as pm2.Pm2Env;
+                    const appPid = pm2_env.BLOCKLET_APP_PID;
+
+                    if (!appPid) {
+                        return;
+                    }
+
+                    const appName = pm2_env.BLOCKLET_APP_NAME;
+                    const domain = pm2_env.BLOCKLET_APP_URL;
+                    const serverUrl = await getServerAdminUrl(pm2_env.ABT_NODE_DID || '');
+
+                    const componentName = (pm2_env.BLOCKLET_REAL_NAME || '').split('/').pop();
+                    const componentDid = pm2_env.BLOCKLET_COMPONENT_DID || '';
+                    const componentVersion = pm2_env.BLOCKLET_COMPONENT_VERSION || '';
+                    const [
+                        componentVersionFromTestStore,
+                        componentVersionFromDevStore,
+                        componentVersionFromProdStore,
+                    ] = await Promise.all([
+                        getStoreVersion('https://test.store.blocklet.dev', componentDid),
+                        getStoreVersion('https://dev.store.blocklet.dev', componentDid),
+                        getStoreVersion('https://store.blocklet.dev', componentDid),
+                    ]);
+                    const needUpdate: '1' | '0' = [
+                        componentVersionFromTestStore,
+                        componentVersionFromDevStore,
+                        componentVersionFromProdStore,
+                    ].some((version) => {
+                        return (
+                            semver.valid(version) &&
+                            semver.valid(componentVersion) &&
+                            semver.gt(version, componentVersion)
+                        );
+                    })
+                        ? '1'
+                        : '0';
+
+                    const labels = {
+                        id: `${appName}/${componentName}`,
+                        appName,
+                        domain,
+                        appPid,
+                        componentName,
+                        componentDid,
+                        componentVersion,
+                        componentVersionFromTestStore,
+                        componentVersionFromDevStore,
+                        componentVersionFromProdStore,
+                        needUpdate,
+                        serverUrl,
+                    };
+                    metricAppComponentList?.set(labels, 1);
+                };
+            }),
+            { concurrency: cpus().length }
+        ).catch((error) => console.error(error));
     });
 };
 

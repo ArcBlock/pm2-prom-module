@@ -19,6 +19,7 @@ const METRIC_AVAILABLE_CPU = 'cpu_count';
 const METRIC_AVAILABLE_APPS = 'available_apps';
 const METRIC_APP_INSTANCES = 'app_instances';
 const METRIC_APP_DOMAIN_LIST = 'app_domain_list';
+const METRIC_APP_COMPONENT_LIST = 'pm2_app_component_list';
 const METRIC_APP_AVERAGE_MEMORY = 'app_average_memory';
 const METRIC_APP_PIDS_MEMORY = 'app_pids_memory';
 const METRIC_APP_TOTAL_MEMORY = 'app_total_memory';
@@ -38,6 +39,7 @@ export const registry = new client.Registry();
 export let metricAvailableApps: client.Gauge | undefined;
 export let metricAppInstances: client.Gauge | undefined;
 export let metricAppDomainList: client.Gauge | undefined;
+export let metricAppComponentList: client.Gauge | undefined;
 export let metricAppAverageMemory: client.Gauge | undefined;
 export let metricAppTotalMemory: client.Gauge | undefined;
 export let metricAppAverageCpu: client.Gauge | undefined;
@@ -161,6 +163,26 @@ export const initMetrics = (prefix: string) => {
         help: 'Show app domain list',
         registers: [registry],
         labelNames: ['appName', 'domain', 'appPid'],
+    });
+
+    metricAppComponentList = new client.Gauge({
+        name: `${prefix}_${METRIC_APP_COMPONENT_LIST}`,
+        help: 'Show app component list',
+        registers: [registry],
+        labelNames: [
+            'id',
+            'appName',
+            'domain',
+            'appPid',
+            'componentName',
+            'componentDid',
+            'componentVersion',
+            'componentVersionFromTestStore',
+            'componentVersionFromDevStore',
+            'componentVersionFromProdStore',
+            'needUpdate',
+            'serverUrl',
+        ],
     });
 
     metricAppAverageMemory = new client.Gauge({
