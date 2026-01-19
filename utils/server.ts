@@ -25,6 +25,9 @@ export async function getServerAdminUrl(serverDid: string): Promise<string> {
     const serverUrl = getServerUrl(serverDid);
     try {
         const response = await fetch(`${serverUrl}/.well-known/did.json`);
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
         const data = await response.json();
         const serverService = data.services?.find((service: any) => service.type === 'server');
         const adminUrl = joinURL(serverUrl, serverService?.path || '/admin/');

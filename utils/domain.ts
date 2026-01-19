@@ -27,6 +27,9 @@ export async function getAppDomainList(url: string): Promise<string[]> {
         }
 
         const response = await fetch(joinURL(url, '__blocklet__.js?type=json'));
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
         const domainAliases = (await response.json())?.domainAliases;
         if (Array.isArray(domainAliases) && domainAliases.length) {
             await appDomainListCache.set(url, domainAliases);
