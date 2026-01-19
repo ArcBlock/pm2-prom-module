@@ -1,6 +1,6 @@
 {
     "name": "@arcblock/pm2-prom-module",
-    "version": "2.6.9",
+    "version": "2.6.10",
     "publishConfig": {
         "access": "public"
     },

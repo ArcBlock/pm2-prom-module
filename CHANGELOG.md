@@ -1,3 +1,7 @@
+## 2.6.10 (2026-1-19)
+
+- fix: check response.ok before parsing JSON to prevent parse errors
+
 ## 2.6.9 (2025-12-29)
 
 - fix: app.urls throw error "TypeError: app.urls is not iterable"
