@@ -37,7 +37,7 @@ importers:
         version: 5.5.3
       lodash:
         specifier: ^4.17.21
-        version: 4.17.21
+        version: 4.17.23
       p-all:
         specifier: ^3.0.0
         version: 3.0.0
@@ -964,6 +964,7 @@ packages:
 
   deep-diff@1.0.2:
     resolution: {integrity: sha512-aWS3UIVH+NPGCD1kki+DCU9Dua032iSsO43LqQpcs4R3+dVv7tX0qBGjiVHJHjplsoUM2XRO/KB92glqc68awg==}
+    deprecated: Package no longer supported. Contact Support at https://www.npmjs.com/support for more info.
 
   deep-extend@0.6.0:
     resolution: {integrity: sha512-LOHxIOaPYdHlJRtCQfDIVZtfw/ufM8+rVj649RIHzcm/vGwQRXFt6OPqIFWsm2XEMrNIEtWR64sY1LEKD2vAOA==}
@@ -1800,8 +1801,8 @@ packages:
   lodash.set@4.3.2:
     resolution: {integrity: sha512-4hNPN5jlm/N/HLMCO43v8BXKq9Z7QdAGc/VGrRD61w8gN9g/6jF9A4L1pbUgBLCffi0w9VsXfTOij5x8iTyFvg==}
 
-  lodash@4.17.21:
-    resolution: {integrity: sha512-v2kDEe57lecTulaDIuNTPy3Ry4gLGJ6Z1O3vE1krgXZNrsQ+LFTGHVxVjcXPs17LhbZVGedAJv8XZ1tvj5FvSg==}
+  lodash@4.17.23:
+    resolution: {integrity: sha512-LgVTMpQtIopCi79SJeDiP0TfWi5CNEc/L/aRdTh3yIvmZXTnheWpKjSZhnvMl8iXbC1tFg9gdHHDMLoV7CnG+w==}
 
   long@5.3.2:
     resolution: {integrity: sha512-mNAgZ1GmyNhD7AuqnTG3/VQ26o760+ZYBPKjPvugO8+nLbYfX6TVpJPseBvopbdY+qpZ/lKUnmEc1LeZYS3QAA==}
@@ -2697,6 +2698,7 @@ packages:
   tar@6.2.1:
     resolution: {integrity: sha512-DZ4yORTwrbTj/7MZYq2w+/ZFdI6OZ/f9SFHR+71gIVUZhOQPHzVCLpvRnPgyaMpfWxxk/4ONva3GQSyNIKRv6A==}
     engines: {node: '>=10'}
+    deprecated: Old versions of tar are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exhorbitant rates) by contacting i@izs.me
 
   taskkill@3.1.0:
     resolution: {integrity: sha512-5KcOFzPvd1nGFVrmB7H4+QAWVjYOf//+QTbOj0GpXbqtqbKGWVczG+rq6VhXAtdtlKLTs16NAmHRyF5vbggQ2w==}
@@ -3037,7 +3039,7 @@ snapshots:
       is-ip: 3.1.0
       is-url: 1.2.4
       json-stable-stringify: 1.3.0
-      lodash: 4.17.21
+      lodash: 4.17.23
       minimatch: 9.0.5
       multiformats: 9.9.0
       node-stream-zip: 1.15.0
@@ -3078,7 +3080,7 @@ snapshots:
       '@wangshijun/hdkey': 2.0.5
       bn.js: 5.2.2
       debug: 4.4.3
-      lodash: 4.17.21
+      lodash: 4.17.23
     transitivePeerDependencies:
       - supports-color
 
@@ -3100,7 +3102,7 @@ snapshots:
       '@ocap/util': 1.21.2
       bn.js: 5.2.2
       debug: 4.4.3
-      lodash: 4.17.21
+      lodash: 4.17.23
     transitivePeerDependencies:
       - supports-color
 
@@ -3160,7 +3162,7 @@ snapshots:
       fclone: 1.0.11
       fs-extra: 11.3.1
       js-yaml: 4.1.0
-      lodash: 4.17.21
+      lodash: 4.17.23
       mkdirp: 1.0.4
       needle: 2.4.0
       pidusage: 3.0.2
@@ -3198,7 +3200,7 @@ snapshots:
       '@ocap/util': 1.21.2
       bn.js: 5.2.1
       joi: 17.12.2
-      lodash: 4.17.21
+      lodash: 4.17.23
     transitivePeerDependencies:
       - supports-color
 
@@ -3211,7 +3213,7 @@ snapshots:
       debug: 4.4.3
       is-absolute-url: 3.0.3
       json-stable-stringify: 1.3.0
-      lodash: 4.17.21
+      lodash: 4.17.23
     transitivePeerDependencies:
       - supports-color
 
@@ -3220,7 +3222,7 @@ snapshots:
       '@arcblock/event-hub': 1.21.2
       debug: 4.4.3
       eventemitter3: 4.0.7
-      lodash: 4.17.21
+      lodash: 4.17.23
       phoenix: 1.7.2
       ws: 8.18.3
     transitivePeerDependencies:
@@ -3263,7 +3265,7 @@ snapshots:
       joi-extension-semver: 5.0.0(joi@17.12.2)
       js-yaml: 4.1.0
       json-stable-stringify: 1.3.0
-      lodash: 4.17.21
+      lodash: 4.17.23
       lru-cache: 11.1.0
       p-limit: 3.1.0
       promise.any: 2.0.6
@@ -3277,7 +3279,7 @@ snapshots:
 
   '@blocklet/xss@0.2.5':
     dependencies:
-      lodash: 4.17.21
+      lodash: 4.17.23
       xss: 1.0.15
 
   '@gar/promisify@1.1.3':
@@ -3367,7 +3369,7 @@ snapshots:
       flat: 5.0.2
       is-absolute-url: 3.0.3
       json-stable-stringify: 1.3.0
-      lodash: 4.17.21
+      lodash: 4.17.23
       mustache: 4.2.0
     transitivePeerDependencies:
       - supports-color
@@ -3391,7 +3393,7 @@ snapshots:
       debug: 4.4.3
       is-absolute-url: 3.0.3
       jsonpack: 1.1.5
-      lodash: 4.17.21
+      lodash: 4.17.23
       react-app-polyfill: 1.0.6
       readable-stream: 3.6.0
       wolfy87-eventemitter: 5.2.9
@@ -3407,7 +3409,7 @@ snapshots:
       '@ocap/util': 1.21.2
       debug: 4.4.3
       esprima: 4.0.1
-      lodash: 4.17.21
+      lodash: 4.17.23
     transitivePeerDependencies:
       - supports-color
 
@@ -3436,14 +3438,14 @@ snapshots:
       '@ocap/util': 1.21.2
       debug: 4.4.3
       google-protobuf: 3.21.0
-      lodash: 4.17.21
+      lodash: 4.17.23
     transitivePeerDependencies:
       - supports-color
 
   '@ocap/proto@1.21.2':
     dependencies:
       debug: 4.4.3
-      lodash: 4.17.21
+      lodash: 4.17.23
     transitivePeerDependencies:
       - supports-color
 
@@ -3457,7 +3459,7 @@ snapshots:
       '@ocap/util': 1.21.2
       '@ocap/wallet': 1.21.2
       bloom-filters: 1.3.9
-      lodash: 4.17.21
+      lodash: 4.17.23
     transitivePeerDependencies:
       - supports-color
 
@@ -3473,7 +3475,7 @@ snapshots:
       '@ocap/wallet': 1.21.2
       debug: 4.4.3
       empty-value: 1.0.1
-      lodash: 4.17.21
+      lodash: 4.17.23
     transitivePeerDependencies:
       - bufferutil
       - supports-color
@@ -3497,7 +3499,7 @@ snapshots:
       debug: 4.4.3
       deep-diff: 1.0.2
       empty-value: 1.0.1
-      lodash: 4.17.21
+      lodash: 4.17.23
       url-join: 4.0.1
     transitivePeerDependencies:
       - bufferutil
@@ -3523,7 +3525,7 @@ snapshots:
       base64-url: 2.3.3
       bn.js: 5.2.1
       bs58: 5.0.0
-      lodash: 4.17.21
+      lodash: 4.17.23
       utf8: 3.0.0
 
   '@ocap/wallet@1.21.2':
@@ -3816,7 +3818,7 @@ snapshots:
       graceful-fs: 4.2.11
       is-stream: 2.0.1
       lazystream: 1.0.1
-      lodash: 4.17.21
+      lodash: 4.17.23
       normalize-path: 3.0.0
       readable-stream: 4.7.0
 
@@ -3887,7 +3889,7 @@ snapshots:
 
   async@2.6.4:
     dependencies:
-      lodash: 4.17.21
+      lodash: 4.17.23
 
   async@3.2.6: {}
 
@@ -3968,7 +3970,7 @@ snapshots:
   bloom-filters@1.3.9:
     dependencies:
       is-buffer: 2.0.5
-      lodash: 4.17.21
+      lodash: 4.17.23
       lodash.eq: 4.0.0
       lodash.indexof: 4.0.5
       reflect-metadata: 0.1.14
@@ -5332,7 +5334,7 @@ snapshots:
 
   lodash.set@4.3.2: {}
 
-  lodash@4.17.21: {}
+  lodash@4.17.23: {}
 
   long@5.3.2: {}
 
